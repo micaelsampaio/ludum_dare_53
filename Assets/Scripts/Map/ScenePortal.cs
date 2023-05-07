@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Core.Managers;
 using Core.Collisions;
 using Core.Managers;
 using Scripts.Player;
@@ -22,20 +23,29 @@ public class ScenePortal : MonoBehaviour
     triggerEvents.OnTriggerEnterEvent += (other) =>
     {
       if (Utils.IsPlayer(other.gameObject))
+      {
         Animator.SetBool("open", true);
+      }
     };
     triggerEvents.OnTriggerExitEvent += (other) =>
     {
       if (Utils.IsPlayer(other.gameObject))
+      {
         Animator.SetBool("open", false);
+      }
     };
+  }
+  private string GetInteractionText()
+  {
+    return "Enter " + ZoneUI.ZoneNames[NextScene];
   }
 
   private void OnTriggerEnter(Collider other)
   {
     if (Utils.IsPlayer(other.gameObject))
     {
-      GameManager.Instance.InputActions.Player.Jump.started += OnEnterPortal;
+      GameManager.Instance.InputActions.Player.Interact.started += OnEnterPortal;
+      GameManager.Instance.GameUI.AddInteraction("E", GetInteractionText());
     }
   }
 
@@ -43,7 +53,8 @@ public class ScenePortal : MonoBehaviour
   {
     if (Utils.IsPlayer(other.gameObject))
     {
-      GameManager.Instance.InputActions.Player.Jump.started -= OnEnterPortal;
+      GameManager.Instance.InputActions.Player.Interact.started -= OnEnterPortal;
+      GameManager.Instance.GameUI.RemoveInteraction(GetInteractionText());
     }
   }
 

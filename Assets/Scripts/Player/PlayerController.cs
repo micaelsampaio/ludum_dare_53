@@ -38,11 +38,12 @@ namespace Scripts.Player
     [SerializeField] private float JumpSpeed;
     [SerializeField] private float JumpSpeedMax;
     [SerializeField] private float maxJumpTime = 0.5f;
+    private bool canPressJump = true;
     private bool jumpReset;
     [SerializeField] private float jumpTime = 0f;
     private float acceleration = 0f;
     private float rotationVelocity = 1f;
-
+    public TargetCharacters TargetWorker;
 
     [Header("[Camera]")]
     [SerializeField] private Transform CameraFollowTarget;
@@ -68,6 +69,7 @@ namespace Scripts.Player
       mainCamera = GameManager.Instance.MainCamera.transform;
       jumpReset = true;
       isJumping = false;
+      canPressJump = true;
       LoadGameState();
       SpawnObjects();
       BindInputs();
@@ -75,6 +77,7 @@ namespace Scripts.Player
 
       OnDeath += (_self) =>
       {
+        ClearVelocity();
         StateMachine.SetState(PlayerDeathState);
         StateMachine.Lock = true;
         Input.Player.Disable();
@@ -89,6 +92,9 @@ namespace Scripts.Player
         StateMachine.Lock = true;
         Animator.SetBool("move", false);
       };
+
+
+      lastPos = transform.position;
     }
     private void CreateStates()
     {
@@ -132,12 +138,14 @@ namespace Scripts.Player
     {
       Input.Player.Jump.started += (ctx) =>
       {
+        if (!canPressJump) return;
         jumpInput = true;
       };
 
       Input.Player.Jump.canceled += (ctx) =>
       {
         jumpInput = false;
+        if (isJumping) canPressJump = false;
       };
     }
 
@@ -184,9 +192,10 @@ namespace Scripts.Player
       Animator.SetBool("move", isMoving);
 
       var targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
-      var velocity = targetDirection * targetSpeed * Time.deltaTime;
-      velocity.y = verticalVelocity * Time.deltaTime;
-      CharacterController.Move(velocity);
+      var velocity = targetDirection * targetSpeed + Vector3.up * verticalVelocity;
+      //velocity.y = verticalVelocity;
+      //CharacterController.Move(velocity);
+      Rigidbody.velocity = velocity;
     }
 
     private void ApplyGravity()
@@ -222,6 +231,7 @@ namespace Scripts.Player
         if (verticalVelocity < 0)
         {
           isJumping = false;
+          canPressJump = true;
         }
       }
       else
@@ -252,18 +262,20 @@ namespace Scripts.Player
 
     public void SetPosition(Vector3 position)
     {
-      CharacterController.enabled = false;
       transform.position = position;
-      CharacterController.enabled = true;
-      CharacterController.Move(Vector3.zero);
+      Rigidbody.velocity = Vector3.zero;
+      verticalVelocity = 0f;
     }
+
     public bool CanAddSoul(int amount)
     {
       return amount > 0;
     }
+
     public void AddSoul(int soulAmount)
     {
       Hp += soulAmount;
+      MaxHp = Hp;
       OnUpdateSouls?.Invoke(Hp);
     }
 
@@ -272,6 +284,8 @@ namespace Scripts.Player
       if (Hp <= 1) return -1;
 
       Hp -= 1;
+      MaxHp = Hp;
+
       OnUpdateSouls?.Invoke(Hp);
       return 1;
     }
@@ -285,11 +299,11 @@ namespace Scripts.Player
     {
       hasControl = false;
       canUpdate = false;
-      CharacterController.enabled = false;
       Rigidbody.isKinematic = true;
       StateMachine.SetState(IdleState);
       Animator.SetBool("move", false);
       Animator.SetBool("isGrounded", true);
+      ClearVelocity();
     }
 
     public void TakePlayerCameraControl()
@@ -305,15 +319,16 @@ namespace Scripts.Player
       canUpdate = true;
       canUpdateCamera = true;
       inputDirection = Vector2.zero;
-      CharacterController.enabled = true;
       verticalVelocity = 0;
       jumpReset = true;
       isJumping = false;
+      canPressJump = true;
       IsGrounded = true;
       canMove = true;
       Rigidbody.isKinematic = false;
       Animator.SetBool("move", false);
       Animator.SetBool("isGrounded", true);
+      ClearVelocity();
     }
 
     public void ResetPlayer()
@@ -325,13 +340,14 @@ namespace Scripts.Player
       canUpdate = true;
       canUpdateCamera = true;
       inputDirection = Vector2.zero;
-      CharacterController.enabled = true;
       verticalVelocity = 0;
       jumpReset = true;
       isJumping = false;
+      canPressJump = true;
       IsGrounded = true;
       canMove = true;
       Rigidbody.isKinematic = false;
+      ClearVelocity();
     }
 
     public void SetCheckPoint(string id, GameSpot spot)
@@ -340,16 +356,19 @@ namespace Scripts.Player
 
       if (id == zoneState.CheckPointId) return;
 
-      if (!Physics.Raycast(transform.position, Vector3.down, out var hit, 0.5f, groundLayer, QueryTriggerInteraction.Ignore))
+      if (!Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out var hit, 1f, groundLayer, QueryTriggerInteraction.Ignore))
       {
+        Debug.Log("NO RAY CAST HIT " + id + " --> " + spot);
+
         return;
       }
 
       Debug.DrawLine(transform.position, transform.position + Vector3.up * 5f, Color.yellow, 9999f);
+      Debug.Log("NEW CHECK POINT " + id + " --> " + spot);
 
       zoneState.CheckPointId = id;
       zoneState.CheckPointSpot = spot;
-      zoneState.CheckPointPosition = transform.position;
+      zoneState.CheckPointPosition = transform.position;      
     }
 
     public STATE_NAME GetStateName()
@@ -359,15 +378,13 @@ namespace Scripts.Player
       return StateMachine.CurrentState.Name;
     }
 
-    public void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-      if (hit.gameObject.TryGetComponent<PlatformCheckPoint>(out var platform))
-      {
-        platform.OnHitPlayer();
-      }
-    }
-
     private bool LastIsGrounded;
+
+    private void ClearVelocity()
+    {
+      Rigidbody.velocity = Vector3.zero;
+      verticalVelocity = 0;
+    }
 
     private void CheckVariables()
     {
@@ -385,5 +402,14 @@ namespace Scripts.Player
 
     }
 
+    private Vector3 lastPos;
+    private void OnDrawGizmos()
+    {
+      Gizmos.color = Color.red;
+      Gizmos.DrawSphere(transform.position, 0.2f);
+
+      Debug.DrawLine(transform.position + Vector3.up, lastPos + Vector3.up, Color.red, 10f);
+      lastPos = transform.position;
+    }
   }
 }

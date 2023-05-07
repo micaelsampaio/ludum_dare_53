@@ -4876,15 +4876,16 @@ MonoBehaviour:
   Parent: {fileID: 0}
   targetPosition: {x: 0, y: 0, z: 0}
   target: {fileID: 0}
+  targetPosTransform: {fileID: 0}
   targetCharacter: {fileID: 0}
   hitMask:
     serializedVersion: 2
     m_Bits: 0
-  speed: 5
+  speed: 15
   onlyHitTarget: 0
   maxTimeAlive: 2
   damage: 1
-  spawnOnHitKey: 
+  spawnOnHitKey: soul_explosion
 --- !u!114 &3446172537068658937
 MonoBehaviour:
   m_ObjectHideFlags: 0

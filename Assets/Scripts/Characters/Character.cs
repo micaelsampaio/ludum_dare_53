@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Characters;
 using Characters;
+using Core.Managers;
 using Core.Pooling;
 using Scripts.Player;
 using UnityEngine;
@@ -11,39 +12,43 @@ namespace Game.Characters
   public class Character : MonoBehaviour
   {
     [Header("[CHARACTER LOADING DATA]")]
+    public string id;
     public CharacterData LoadingData;
 
     [Header("[CHARACTER]")]
     public CharacterType Type;
     public bool IsAlive;
     public int Hp;
+    public int MaxHp;
     public float Speed;
     public int Damage = 1;
     public bool IsGrounded = true;
+    public float radius;
+    public float height;
 
     [Header("[CORE COMPONENTS]")]
     public Animator Animator;
     public Rigidbody Rigidbody;
-    public CharacterController CharacterController;
     public SoundController SoundController;
 
     public CharacterSocket[] CharacterSockets;
     protected LayerMask groundLayer;
 
     public event CharacterEvent OnDeath;
+    public event CharacterEvent OnUpdateHp;
 
     private bool Loaded = false;
 
     public virtual void Awake()
     {
       LoadingData.Load(gameObject);
-      groundLayer = ~(1 << gameObject.layer);
+      groundLayer = ~(1 << gameObject.layer);      
+      Hp = MaxHp;
       IsAlive = Hp > 0;
     }
 
     public virtual void Start()
     {
-      lastPos = transform.position;
       Loaded = true;
     }
 
@@ -60,24 +65,16 @@ namespace Game.Characters
 
     protected void GroundedCheck()
     {
-      IsGrounded = Physics.CheckSphere(transform.position, 0.2f, groundLayer, QueryTriggerInteraction.Ignore);
+      IsGrounded = Physics.CheckSphere(transform.position, 0.1f, groundLayer, QueryTriggerInteraction.Ignore);
     }
 
-    Vector3 lastPos;
-
-    private void OnDrawGizmos()
-    {
-      Gizmos.color = Color.red;
-      Gizmos.DrawSphere(transform.position, 0.2f);
-
-      Debug.DrawLine(transform.position + Vector3.up, lastPos + Vector3.up, Color.red, 10f);
-      lastPos = transform.position;
-    }
     public void OnDamage(int dmg)
     {
       Debug.Log("DAMAGE");
 
       Hp -= dmg;
+
+      OnUpdateHp?.Invoke(this);
 
       if (Hp <= 0)
       {
@@ -97,6 +94,7 @@ namespace Game.Characters
       var clone = LoadingData.Spawn<GameObject>(key, target, parent);
       if (clone) clone.SetActive(true);
       if (!string.IsNullOrEmpty(data.spawnSound) && SoundController != null) SoundController.PlaySound(data.spawnSound);
+      if (!string.IsNullOrEmpty(data.spawnSound) && SoundController == null) GameManager.Instance.SoundController.PlaySound(LoadingData.GetSound(data.spawnSound));
       if (clone && !string.IsNullOrEmpty(data.spawnEffect))
       {
         var clone2 = LoadingData.Spawn<GameObject>(data.spawnEffect, clone.transform, parent.transform);

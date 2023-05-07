@@ -14,25 +14,24 @@ public class Menu : MonoBehaviour
 
   public Button NewGameBtn;
   public Button ContinueGameBtn;
-  public TextMeshProUGUI GamePercentage;
 
 
   void Start()
   {
     var hasContinueGame = DataManager.HasGameData();
 
-    Debug.Log("hasContinueGame " + hasContinueGame);
-
     NewGameBtn.onClick.AddListener(StartNewGame);
+    var continueText = ContinueGameBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+    var color = continueText.color;
 
     if (hasContinueGame)
     {
       ContinueGameBtn.onClick.AddListener(ContinueGame);
-      GamePercentage.text = DataManager.GetGamePercent().ToString() + "%";
     }
 
+    color.a = hasContinueGame ? 1 : 0.3f;
     ContinueGameBtn.interactable = hasContinueGame;
-    GamePercentage.gameObject.SetActive(hasContinueGame);
+    continueText.color = color;
 
 
     var audios = FindObjectsOfType<AudioManager>();
@@ -42,7 +41,7 @@ public class Menu : MonoBehaviour
   private void StartNewGame()
   {
     DataManager.SetNewGame();
-    StartCoroutine(LoadLevel("ZoneA"));
+    StartCoroutine(LoadLevel("StartGameCutscene"));
   }
   private void ContinueGame()
   {

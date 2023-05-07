@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu.unity
     guid: 60ffdaa646f4e63478ad338218f35983
   - enabled: 1
+    path: Assets/Scenes/Zones/ZoneTutorial.unity
+    guid: 747c9ed1c87021b4c99c6e4405191158
+  - enabled: 1
     path: Assets/Scenes/Zones/ZoneA.unity
     guid: 7cb4e1cd70d1df345b79fec98cc69756
   - enabled: 1
@@ -20,6 +23,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Zones/ZoneD.unity
     guid: e5d3acaa852e4394985e6bb1e8113e17
+  - enabled: 1
+    path: Assets/Scenes/Zones/StartGameCutscene.unity
+    guid: 1b8e93d1a9451ef489319637a2c38f04
   - enabled: 1
     path: Assets/Scenes/EndGame.unity
     guid: bd5a0bd06cb8ab14e9e3a9407e4d1c87

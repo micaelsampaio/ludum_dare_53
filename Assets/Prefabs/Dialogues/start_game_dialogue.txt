@@ -1,0 +1,43 @@
+﻿---
+character:
+Boat Soul
+text:
+Greetings, unfortunate being
+time:
+3
+---
+character:
+Boat Soul
+text:
+If you can see me, that means you died
+time:
+3
+---
+character:
+soul
+text:
+...
+time:
+2
+---
+character:
+Boat Soul
+text:
+Don't be scared, I will take you to the gate keeper
+time:
+3
+---
+character:
+Boat Soul
+text:
+What is this??
+time:
+3
+---
+character:
+Boat Soul
+text:
+Not again...
+time:
+3
+---

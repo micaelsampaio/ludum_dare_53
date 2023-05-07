@@ -11,6 +11,26 @@ namespace Scripts.Enemies
     public StateMachine stateMachine;
     public float HitPlayerCooldown = -1;
     public bool CanDealDamageOnCollision = true;
+    public bool MarkAsDead = false;
+
+    public override void Awake()
+    {
+      if (MarkAsDead)
+      {
+        if (GameManager.Instance.GameState.zoneState.EnemiesKilled.Contains(id)){
+          gameObject.SetActive(false);
+          return;
+        }
+        OnDeath += (c) =>
+        {
+          GameManager.Instance.EnemiesKilled.Add(c.id);
+        };
+      }
+
+
+      base.Awake();
+    }
+
 
     public bool OnPlayerCollision(GameObject other)
     {

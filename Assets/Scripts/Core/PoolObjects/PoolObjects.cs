@@ -274,5 +274,15 @@ namespace Core.Pooling
 
       return null;
     }
+
+    public Sound GetSound(string name)
+    {
+      foreach (var sound in Sounds)
+      {
+        if (sound.name == name) return sound;
+      }
+
+      return null;
+    }
   }
 }

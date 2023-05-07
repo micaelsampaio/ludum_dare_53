@@ -15,19 +15,20 @@ namespace Assets.Scripts.Data
     public static void SetNewGame()
     {
       PlayerPrefs.DeleteKey("gs");
-      PlayerPrefs.DeleteKey("zoneA");
-      PlayerPrefs.DeleteKey("zoneB");
-      PlayerPrefs.DeleteKey("zoneC");
-      PlayerPrefs.DeleteKey("zoneD");
+      PlayerPrefs.DeleteKey("z_ZoneA");
+      PlayerPrefs.DeleteKey("z_ZoneB");
+      PlayerPrefs.DeleteKey("z_ZoneC");
+      PlayerPrefs.DeleteKey("z_ZoneD");
+      PlayerPrefs.DeleteKey("z_ZoneTutorial");
       SaveAllData();
     }
     public static int GetGamePercent()
     {
       var gameStateRaw = PlayerPrefs.GetString("gs");
       var gameState = JsonUtility.FromJson<GameState>(gameStateRaw);
-      Debug.Log(" ---> " + gameState.SoulsDelivered);
       return (int)((gameState.SoulsDelivered * 1.0f / GameManager.MAX_SOULS) * 100f);
     }
+
     public static void SetGameState(GameState state)
     {
       var json = JsonUtility.ToJson(state);

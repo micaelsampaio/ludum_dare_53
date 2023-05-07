@@ -12,6 +12,10 @@ public class GameUI : MonoBehaviour
   [SerializeField] private TextMeshProUGUI soulsToDeliverText;
   [SerializeField] private TextMeshProUGUI soulsToDeliveredText;
 
+  [SerializeField] private GameObject Interaction;
+  [SerializeField] private TextMeshProUGUI InteractionKeyTxt;
+  [SerializeField] private TextMeshProUGUI InteractionTxt;
+
   private void Start()
   {
     var gameState = GameManager.Instance.GameState;
@@ -20,8 +24,11 @@ public class GameUI : MonoBehaviour
     soulsToDeliverText.text = playerState.soulsToDeliver.ToString();
     soulsToDeliveredText.text = gameState.SoulsDelivered.ToString() + " / " + Mathf.Max(gameState.SoulsDelivered, GameManager.MAX_SOULS).ToString();
 
+    GameManager.Instance.Player.OnUpdateHp += c => UpdateSouls(c.Hp);
     GameManager.Instance.Player.OnUpdateSouls += UpdateSouls;
     GameManager.Instance.Player.PlayerSouls.OnUpdateSoulsToDeliver += UpdateSoulsToDeliver;
+
+    Interaction.SetActive(false);
   }
 
   private void UpdateSoulsToDeliver(int index)
@@ -38,6 +45,21 @@ public class GameUI : MonoBehaviour
   {
     soulsToDeliveredText.text = index.ToString() + " / " + Mathf.Max(index, GameManager.MAX_SOULS).ToString();
 
+  }
+
+  public void AddInteraction(string key, string text)
+  {
+    InteractionKeyTxt.text = $"[{key}]";
+    InteractionTxt.text = text;
+    Interaction.SetActive(true);
+  }
+
+  public void RemoveInteraction(string text)
+  {
+    if (InteractionTxt.text == text)
+    {
+      Interaction.SetActive(false);
+    }
   }
 
 

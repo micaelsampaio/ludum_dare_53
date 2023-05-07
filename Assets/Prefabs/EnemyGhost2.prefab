@@ -140,7 +140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8869690510349929416}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -241,36 +241,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53eca067afb33744cb4cbd371d8187e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
   LoadingData:
     PoolObjects:
     - key: ghost_hit
       prefab: {fileID: 957649724705087647, guid: 4c36bc8b9036e174bb67184c27eb3e52, type: 3}
       amount: 10
       increment: 0
-    Sounds: []
+    Sounds:
+    - audioClip: {fileID: 8300000, guid: 427c480241b49b74e9e7411764cb4ce2, type: 3}
+      name: ghost_scream
+      volume: 0.2
+      cooldown: 0
     SpawnObjectsConfig:
     - key: ghost_hit
       spawnKey: ghost_hit
-      spawnSound: ghost_hit_sound
+      spawnSound: ghost_scream
       spawnEffect: 
       position: {x: 0, y: 1, z: 0}
       rotation: {x: 0, y: 0, z: 0}
       parent: 1
   Type: 0
   IsAlive: 0
-  Hp: 2
+  Hp: 0
+  MaxHp: 3
   Speed: 3
   Damage: 1
   IsGrounded: 1
+  radius: 0
+  height: 0
   Animator: {fileID: 0}
   Rigidbody: {fileID: 0}
-  CharacterController: {fileID: 0}
   SoundController: {fileID: 0}
   CharacterSockets:
   - type: 1
-    socket: {fileID: 0}
+    socket: {fileID: 8869690510349929416}
   HitPlayerCooldown: -1
   CanDealDamageOnCollision: 1
+  MarkAsDead: 0
   MovePointsState: {fileID: 7735811715091359642}
   WaitState: {fileID: 7735811715091359643}
   GateKeeperState: {fileID: 0}
@@ -464,7 +472,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 68f14a58364e2384aae192a0a4697465, type: 2}
     - target: {fileID: -4850072230915331997, guid: 2c7992e78e51a5b49860cbe5476e7aa4, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -2796336954930445739, guid: 2c7992e78e51a5b49860cbe5476e7aa4, type: 3}
       propertyPath: m_IsActive

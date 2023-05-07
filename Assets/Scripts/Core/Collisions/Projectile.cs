@@ -1,4 +1,5 @@
-﻿using Core.Pooling;
+﻿using System;
+using Core.Pooling;
 using Game.Characters;
 using UnityEngine;
 
@@ -55,7 +56,7 @@ namespace Assets.Scripts.Core.Collisions
 
     public void Update()
     {
-      var tempTarget = targetPosTransform != null ? targetPosTransform : target;
+      var tempTarget = targetPosTransform != null && targetPosTransform.gameObject.activeSelf ? targetPosTransform : target;
 
       targetPosition = tempTarget && tempTarget.gameObject.activeSelf ? tempTarget.position : targetPosition;
 
@@ -75,6 +76,7 @@ namespace Assets.Scripts.Core.Collisions
       if (other.transform == target && targetCharacter)
       {
         targetCharacter.OnDamage(damage);
+        SpawnEffect(targetCharacter.transform);
         DisableProjectile();
 
         if (!string.IsNullOrEmpty(spawnOnHitKey))
@@ -82,6 +84,12 @@ namespace Assets.Scripts.Core.Collisions
           Parent.Spawn(spawnOnHitKey, target, Parent.transform);
         }
       }
+    }
+
+    private void SpawnEffect(Transform targetCharacter)
+    {
+      if (!Parent) return;
+      if (!string.IsNullOrEmpty(spawnOnHitKey)) Parent.Spawn(spawnOnHitKey, targetCharacter, Parent.transform);
     }
 
     private void OnDisable()

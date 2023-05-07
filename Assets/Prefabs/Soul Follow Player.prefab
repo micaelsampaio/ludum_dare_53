@@ -47,10 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   souls: 0
   soulsToDeliver: 0
-  sizePerSoul: 0.15
-  minSize: 0.5
-  maxSize: 2
-  speed: 5
+  sizePerSoul: 0.2
+  minSize: 0.25
+  maxSize: 1.25
+  height: 2
+  speed: 4
   followSpeed: 0
   minDistance: 0.5
   maxDistance: 2

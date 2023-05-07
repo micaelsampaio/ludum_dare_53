@@ -14,9 +14,18 @@ namespace Assets.Scripts.Enemies.States
     private float time;
     private float maxTime;
     private int state;
+    public GameObject HitEffect;
 
     [SerializeField] private Transform collisionPosition;
     [SerializeField] private Renderer Mesh;
+
+    private void Start()
+    {
+      if (!Character || !Character.gameObject.activeSelf)
+      {
+        gameObject.SetActive(false);
+      }
+    }
 
     public override void CreateState(Character character)
     {
@@ -27,6 +36,7 @@ namespace Assets.Scripts.Enemies.States
 
       transform.SetParent(null);
       collisionPosition.transform.SetParent(null);
+      character.OnDeath += (c) => gameObject.SetActive(false);
     }
 
     public override void InitState()
@@ -46,30 +56,32 @@ namespace Assets.Scripts.Enemies.States
     {
       if (Done) return;
       base.TickState();
-
       time += Time.deltaTime;
+      var elasped = time / maxTime;
 
-      if (state == 0)
-      {
-        if (time > 0.15)
-        {
-          state = 1;
-          time = 0;
-        }
+      //if (state == 0)
+      //{
+      //  if (time > 0.15)
+      //  {
+      //    state = 1;
+      //    time = 0;
+      //  }
 
-        ai.transform.position = player.transform.position + player.transform.forward;
+      //  ai.transform.position = player.transform.position + player.transform.forward;
 
-        return;
-      }
+      //  return;
+      //}
 
-      var targetPosition = Vector3.Lerp(player.transform.position, collisionPosition.position, time / maxTime);
+      var targetPosition = Vector3.Lerp(player.transform.position, collisionPosition.position, elasped);
       player.transform.position = targetPosition;
       ai.transform.position = player.transform.position + player.transform.forward;
 
-      if (time > maxTime)
+      if (elasped > 1)
       {
-        player.Spawn("jump_dust", player.transform, player.transform);
         Done = true;
+        HitEffect.transform.position = player.transform.position + Vector3.up * 0.1f;
+        HitEffect.SetActive(true);
+
         GoToNextState(ai.stateMachine);
       }
     }
@@ -78,6 +90,7 @@ namespace Assets.Scripts.Enemies.States
     {
       base.EndState();
       player.GivePlayerControl();
+      player.OnDamage(2);
       ai.CanDealDamageOnCollision = false;
     }
     private void OnTriggerEnter(Collider other)

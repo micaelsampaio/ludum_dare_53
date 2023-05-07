@@ -88,8 +88,7 @@ namespace Assets.Scripts.Player
       }
 
       var speed = acceleration * velocity;
-
-      Character.CharacterController.Move(speed * Time.deltaTime);
+      Character.Rigidbody.velocity =  speed;
 
       if (time >= DashTime)
       {

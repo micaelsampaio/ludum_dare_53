@@ -18,6 +18,7 @@ namespace Assets.Scripts.Data
     [NonSerialized] public Vector3 CheckPointPosition;
 
     public List<string> SoulsCatched = new List<string>();
+    public List<string> EnemiesKilled = new List<string>();
 
     public ZoneState(string name)
     {
@@ -32,6 +33,11 @@ namespace Assets.Scripts.Data
     public void MarkAsCatchedSoul(string id)
     {
       SoulsCatched.Add(id);
+    }
+
+    public void MarkAsDead(string id)
+    {
+      EnemiesKilled.Add(id);
     }
 
     public static ZoneState Create(string zone)

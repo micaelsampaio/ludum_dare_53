@@ -57,6 +57,7 @@ public class SoundController : MonoBehaviour
 
     //if (!canPlaySound) return;
 
+
     if (sound != null)
     {
       audioSource.PlayOneShot(sound.audioClip, sound.volume > 0 ? sound.volume : 0.5f);

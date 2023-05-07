@@ -44,6 +44,10 @@ public class Utils
 
     return null;
   }
+  public static bool TryGetCharacter(GameObject obj, out Character character)
+  {
+    return obj.TryGetComponent<Character>(out character);
+  }
 
   public static float ClampAngle(float lfAngle, float lfMin, float lfMax)
   {
@@ -256,8 +260,7 @@ public class Utils
     {
       if (portal.PortalId == currentPortal) return portal.gameObject;
     }
-
-    return portals.Length == 0 ? null : portals[0].gameObject;
+    return null;
   }
 
   private static Character[] GetTargets(Transform transform, Collider[] targetsCandidates)
@@ -335,6 +338,32 @@ public class Utils
       Vector3 forward = transform.forward;
       Vector3 toOther = potentialTarget.transform.position - transform.position;
       var targetAngle = Vector3.Angle(transform.forward, toOther);
+      if (angle > targetAngle)
+      {
+        Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;
+        float dSqrToTarget = directionToTarget.sqrMagnitude;
+        if (dSqrToTarget < closestDistanceSqr)
+        {
+          closestDistanceSqr = dSqrToTarget;
+          bestTarget = potentialTarget;
+        }
+      }
+    }
+
+    return bestTarget;
+  }
+
+  public static Character GetTargetLookAt(Transform transform, Transform transformToLook, List<Character> targets, float angle = 80)
+  {
+
+    Character bestTarget = null;
+    float closestDistanceSqr = Mathf.Infinity;
+    Vector3 currentPosition = transform.position;
+
+    foreach (var potentialTarget in targets)
+    {
+      Vector3 toOther = potentialTarget.transform.position - transformToLook.position;
+      var targetAngle = Vector3.Angle(transformToLook.forward, toOther);
       if (angle > targetAngle)
       {
         Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;

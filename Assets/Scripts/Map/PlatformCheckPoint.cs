@@ -13,5 +13,19 @@ namespace Assets.Scripts.Map
       var player = GameManager.Instance.Player;
       player.SetCheckPoint(id, spotType);
     }
+    private void OnCollisionEnter(Collision other)
+    {
+      if (Utils.IsPlayer(other.gameObject))
+      {
+        OnHitPlayer();
+      }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+      if (Utils.IsPlayer(other))
+      {
+        OnHitPlayer();
+      }
+    }
   }
 }

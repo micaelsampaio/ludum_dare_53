@@ -19,6 +19,7 @@ namespace Scripts.Player
     [SerializeField] private float sizePerSoul = 0.1f;
     [SerializeField] private float minSize;
     [SerializeField] private float maxSize;
+    [SerializeField] private float height = 1f;
     [SerializeField] private float speed;
     [SerializeField] private float followSpeed;
     [SerializeField] private float minDistance;
@@ -30,6 +31,7 @@ namespace Scripts.Player
     [SerializeField] private float material3;
     [SerializeField] private Renderer material4;
     [SerializeField] private Transform SizeObject;
+    private float acceleration = 0f;
 
     private STATE_NAME State;
 
@@ -47,7 +49,7 @@ namespace Scripts.Player
       player = GameManager.Instance.Player;
       player.OnUpdateSouls += SetSouls;
 
-      var targetPosition = player.transform.position + Vector3.up * 2f - player.transform.forward + player.transform.right;
+      var targetPosition = player.transform.position + Vector3.up * height - player.transform.forward + player.transform.right;
       transform.position = targetPosition;
       transform.rotation = Utils.LookAt(transform, player.transform);
 
@@ -65,13 +67,15 @@ namespace Scripts.Player
     private void Start()
     {
       OnUpdateSoulsToDeliver?.Invoke(SoulsToDeliver.Count);
-      Debug.Log("INvoke " + SoulsToDeliver.Count);
     }
 
     private void Update()
     {
-      var targetPosition = player.transform.position + Vector3.up * 2f - player.transform.forward + player.transform.right;
+      var targetPosition = player.transform.position + Vector3.up * height - player.transform.forward + player.transform.right;
       var dist = Vector3.Distance(transform.position, targetPosition);
+
+      Debug.DrawLine(targetPosition - Vector3.up, targetPosition + Vector3.up, Color.red);
+      Debug.DrawLine(targetPosition - Vector3.right, targetPosition + Vector3.right, Color.red);
 
       switch (State)
       {
@@ -122,6 +126,7 @@ namespace Scripts.Player
     {
       followSpeed = 1;
       State = STATE_NAME.FOLLOW_TARGET;
+      acceleration = 0f;
     }
 
     private void FollowTarget(float dist, Vector3 targetPosition)
@@ -133,8 +138,8 @@ namespace Scripts.Player
       }
 
       if (dist > maxDistance) followSpeed += Time.deltaTime * speed * 4;
-
-      transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * followSpeed * Time.deltaTime);
+      acceleration = Mathf.Clamp(acceleration + Time.deltaTime * 4f, 0.1f, 1);
+      transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * acceleration * followSpeed * Time.deltaTime);
       transform.rotation = Utils.LookAt(transform, targetPosition, Time.deltaTime * 20f);
     }
 
@@ -200,6 +205,7 @@ namespace Scripts.Player
 
       GameManager.Instance.GameState.playerState.soulsToDeliver = SoulsToDeliver.Count;
       OnUpdateSoulsToDeliver?.Invoke(SoulsToDeliver.Count);
+      Debug.Log("INVOKE SOUL TO DELIVER");
     }
 
     private IEnumerator SpawnSoulToDeliver()
@@ -209,12 +215,12 @@ namespace Scripts.Player
 
     private void OnDrawGizmos()
     {
-      Gizmos.color = Color.blue;
-      Gizmos.DrawWireSphere(transform.position, minDistance);
+      Gizmos.color = Color.yellow;
+      Gizmos.DrawWireSphere(transform.position, minDistance * 2);
       Gizmos.color = Color.red;
-      Gizmos.DrawWireSphere(transform.position, maxDistance);
-      Gizmos.color = Color.green;
-      Gizmos.DrawWireSphere(transform.position, startMovingDistance);
+      Gizmos.DrawWireSphere(transform.position, maxDistance * 2);
+      Gizmos.color = Color.blue;
+      Gizmos.DrawWireSphere(transform.position, startMovingDistance * 2);
     }
 
     public int RemoveSoulToDeliver()

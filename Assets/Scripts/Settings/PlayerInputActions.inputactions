@@ -51,6 +51,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "CloseUi",
+                    "type": "Button",
+                    "id": "6b0dd702-d2a7-48ea-aa25-98d934b37e3b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Attack",
                     "type": "Button",
                     "id": "e28003d0-bbc3-4675-a22c-09304601e52d",
@@ -223,6 +232,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47e0bc6b-48a9-47ec-9fd9-7bf675b6d479",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseUi",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

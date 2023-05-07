@@ -38,10 +38,8 @@ public class PlayerThrowSoul : State
     projectile.SetTargetPosition(target.GetSocket(CharacterSocketType.TARGET));
     projectile.transform.position = player.PlayerSouls.transform.position;
     projectile.gameObject.SetActive(true);
-
     player.StateMachine.SetState(player.IdleState);
-
-    NextShotCooldownTimer = GameManager.time + NextShotCooldown;
+    NextShotCooldownTimer = GameManager.time + 0.5f;
   }
 
   public override void EndState()
@@ -53,10 +51,23 @@ public class PlayerThrowSoul : State
 
   private void ValidateStartState()
   {
+    Debug.Log("HP " + player.Hp);
+    if (player.Hp <= 1) return;
+
+    Debug.Log(!player.hasControl || player.GetStateName() != STATE_NAME.IDLE || NextShotCooldownTimer > GameManager.time);
+    Debug.Log(!player.hasControl + " " + (player.GetStateName() != STATE_NAME.IDLE) + " " + GameManager.time + " " + (NextShotCooldownTimer + " " + GameManager.time + " -> " + (GameManager.time - NextShotCooldownTimer)));
+
+
     if (!player.hasControl || player.GetStateName() != STATE_NAME.IDLE || NextShotCooldownTimer > GameManager.time) return;
-    var target = Utils.GetTargetLookAt(transform, Utils.ENEMIES_LAYER, 6f);
+
+    var target = player.TargetWorker.Target;
+
+    Debug.Log("target" + target);
+
     if (target == null) return;
+
     this.target = target;
+    player.RemoveSoul();
     player.StateMachine.SetState(this);
   }
 }

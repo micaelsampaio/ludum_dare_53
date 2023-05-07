@@ -1,6 +1,8 @@
 ﻿using System;
+using Assets.Scripts.Data;
 using Assets.Scripts.Map;
 using Core.Managers;
+using Game.Characters;
 using Scripts.Map;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -25,12 +27,30 @@ public class GameManagerEditor : Editor
 
     if (GUILayout.Button("DELETE STORAGE"))
     {
-      PlayerPrefs.DeleteKey("gs");
-      PlayerPrefs.DeleteKey("z_ZoneA");
-      PlayerPrefs.DeleteKey("z_ZoneB");
-      PlayerPrefs.DeleteKey("z_ZoneC");
+      DataManager.SetNewGame();
       PlayerPrefs.Save();
+      Debug.Log("DELETED GAME DATA");
     }
+
+    GUILayout.Space(10);
+
+    if (GUILayout.Button("Souls To Catch"))
+    {
+      GetSoulsToCatch();
+    }
+  }
+
+  private void GetSoulsToCatch()
+  {
+    var souls = FindObjectsOfType<SoulObject>();
+    var soulsC = 0;
+
+    foreach (var soul in souls)
+    {
+      if (soul.ToCatch) soulsC++;
+    }
+
+    UnityEngine.Debug.Log("SOULS TO CATCH ---> " + soulsC);
   }
 
   private void CreateIDs()
@@ -59,6 +79,16 @@ public class GameManagerEditor : Editor
       }
     }
 
+    var characters = FindObjectsOfType<Character>();
+    foreach (var script in characters)
+    {
+      if (string.IsNullOrEmpty(script.id))
+      {
+        script.id = id + Guid.NewGuid().ToString();
+        EditorUtility.SetDirty(script);
+        EditorSceneManager.MarkSceneDirty(script.gameObject.scene);
+      }
+    }
 
     AssetDatabase.SaveAssets();
   }

@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Material
-    second: {fileID: 2100000, guid: fa4f3e5e58150f440817159459800a64, type: 2}
+    second: {fileID: 2100000, guid: 685fc2084f187f745bfb21fd768795c0, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -80,12 +80,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips:
-  - 2da2dace80e9b4443808f06e60465059
-  - eabdc672cfd596e4495796fc2b3eb1c6
-  - 75d63b0e4cb061a40901b990daf8cb94
-  - 65691e8cc14de1e499cd5f026057f4fd
-  - 7a0fcd82c87b1c64a8b2fd4b06dacb65
+  referencedClips: []
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
